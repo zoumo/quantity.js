@@ -1,0 +1,29 @@
+{
+  "name": "quantity.js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "entry.js",
+  "scripts": {
+    "test": "mocha --require babel-register",
+    "start": "node --harmony entry.js"
+  },
+  "keywords": [
+    "quantity",
+    "k8s",
+    "kubernetes"
+  ],
+  "author": "jim.zoumo@gmail.com",
+  "license": "MIT",
+  "dependencies": {
+    "babel-polyfill": "^6.23.0",
+    "bignumber.js": "^4.0.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.24.0",
+    "babel-loader": "^6.4.1",
+    "babel-preset-env": "^1.3.2",
+    "babel-register": "^6.24.1",
+    "mocha": "^3.2.0",
+    "webpack": "^2.3.3"
+  }
+}
