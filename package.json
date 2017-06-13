@@ -1,6 +1,6 @@
 {
   "name": "quantity.js",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "",
   "main": "entry.js",
   "scripts": {
@@ -12,8 +12,18 @@
     "k8s",
     "kubernetes"
   ],
-  "author": "jim.zoumo@gmail.com",
-  "license": "MIT",
+  "author": {
+    "name":"Jim Zhang",
+    "email": "jim.zoumo@gmail.com"
+  },
+  "publishConfig": {
+    "registry": "http://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zoumo/quantity.js"
+  },
+  "license": "Apache-2.0",
   "dependencies": {
     "babel-polyfill": "^6.23.0",
     "bignumber.js": "^4.0.1"
