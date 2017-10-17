@@ -154,27 +154,41 @@ describe("parse quantity and toString", function() {
 
 describe("operation", function() {
     let parse = Q.parseQuantity
-    
-    it("add", function () {
+
+    it("add", function() {
         assert.deepEqual(parse("100Mi").add(parse("50Mi")), parse("150Mi"))
         assert.deepEqual(parse("100Mi").plus(parse("50Mi")), parse("150Mi"))
     })
 
-    it("minus", function () {
+    it("minus", function() {
         assert.deepEqual(parse("100Mi").minus(parse("50Mi")), parse("50Mi"))
         assert.deepEqual(parse("100Mi").sub(parse("50Mi")), parse("50Mi"))
     })
 
-    it("div", function () {
+    it("div", function() {
         assert.deepEqual(parse("100").div(parse("50")), parse("2"))
     })
 
-    it("mul", function () {
+    it("mul", function() {
         assert.deepEqual(parse("2").mul(parse("50")), parse("100"))
         assert.deepEqual(parse("2").times(parse("50")), parse("100"))
     })
 
-    it("mod", function () {
+    it("mod", function() {
         assert.deepEqual(parse("10").mod(parse("3")), parse("1"))
+    })
+})
+
+describe("convert", function() {
+    let parse = Q.parseQuantity
+
+    it("no round", function() {
+        assert.equal(parse("1.5Mi").convertTo("Mi").toString(), "1.5Mi")
+        assert.equal(parse("1.5Mi").convertTo("Ki").toString(), "1536Ki")
+    })
+    
+    it("round", function() {
+        assert.equal(parse("1.5Mi").convertTo("Mi", 0).toString(), "2Mi")
+        assert.equal(parse("500Mi").convertTo("Gi", 2).toString(), "0.49Gi")
     })
 })

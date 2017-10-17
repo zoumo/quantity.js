@@ -41,23 +41,52 @@ const Tera = 12
 const Peta = 15
 const Exa = 18
 
+/**
+ * bePair contains a base and exponent pair
+ */
 class bePair {
     constructor(base, exponent) {
         this.base = base
         this.exponent = exponent
     }
 }
-
+/**
+ * listSuffixer contains two mapping relationship
+ * @class listSuffixer
+ */ 
 class listSuffixer {
+
+    /**
+     * @constructor listSuffixer
+     */
     constructor() {
+        /**
+         * @property {Object} suffixToBE is the suffix to bePair mapping
+         * @property {Object} beToSuffix is the bePair to suffix mapping
+         */
         this.suffixToBE = {}
         this.beToSuffix = {}
     }
+
+    /**
+     * register a suffix and bePair mapping relationship
+     *  
+     * @param {string} suffix 
+     * @param {bePair} bePair 
+     */
     addSuffix(suffix, bePair) {
         this.suffixToBE[suffix] = bePair
         this.beToSuffix[JSON.stringify(bePair)] = suffix
 
     }
+
+    /**
+     * Find the bePair related to the given suffix,
+     * if not, if boolean in returns will be false 
+     * 
+     * @param {string} suffix 
+     * @returns {[number, number, boolean]} if suffix is not registered, the return boolean will be false
+     */
     lookup(suffix) {
         if (!this.suffixToBE.hasOwnProperty(suffix)) {
             return [0, 0, false]
@@ -66,6 +95,14 @@ class listSuffixer {
         return [pair.base, pair.exponent, true]
     }
 
+    /**
+     * construct a suffix related to the given bePair,
+     * if not, the boolean in returns will be false
+     * 
+     * @param {number} base 
+     * @param {number} exponent 
+     * @returns {[string, boolean]}
+     */
     construct(base, exponent) {
         let key = JSON.stringify(new bePair(base, exponent))
         if (!this.beToSuffix.hasOwnProperty(key)) {
@@ -77,14 +114,30 @@ class listSuffixer {
 
 }
 
+/**
+ * suffixHandler help you to handle suffix and format
+ * @class suffixHandler
+ */
 class suffixHandler {
+    /**
+     * @constructor suffixHandler
+     */
     constructor() {
+        /**
+         * @property {listSuffixer} decSuffixes DecimalSI suffix mapping
+         * @property {listSuffixer} binSuffixes BinarySI suffix mapping
+         */
         this.decSuffixes = new listSuffixer()
         this.binSuffixes = new listSuffixer()
     }
 
+    /**
+     * interpret a suffix to base, exponent, format 
+     * 
+     * @param {string} suffix 
+     * @returns {[number, number, string, boolean]}
+     */
     interpret(suffix) {
-
         let [b, e, ok] = this.decSuffixes.lookup(suffix)
         if (ok) {
             return [b, e, DecimalSI, true]
@@ -102,6 +155,14 @@ class suffixHandler {
         return [0, 0, DecimalExponent, false]
     }
 
+    /**
+     * construct a suffix by given base, exponent and format
+     * 
+     * @param {number} base 
+     * @param {number} exponent 
+     * @param {string} format 
+     * @returns {[string, boolean]}
+     */
     construct(base, exponent, format) {
         switch (format) {
             case DecimalSI:
@@ -148,6 +209,12 @@ class fastLookup extends suffixHandler {
         this.decSuffixes.addSuffix("E", new bePair(10, Exa))
     }
 
+    /**
+     * interpret a suffix to base, exponent, format 
+     * 
+     * @param {string} suffix 
+     * @returns {[number, number, string, boolean]}
+     */
     interpret(suffix) {
         switch (suffix) {
             case "":
@@ -170,18 +237,30 @@ class fastLookup extends suffixHandler {
 
 }
 
-// quantitySuffixer handles suffixes for all three formats that quantity
-// can handle.
+/**
+ * quantitySuffixer handles suffixes for all three formats that quantity can handle.
+ */
 const quantitySuffixer = new fastLookup()
 
 // -----------------------------------------------------------
 
-// Quantity extends BigNumber, rewrite the string function
+/**
+ * Quantity extends BigNumber, rewrite the string function
+ * @class Quantity
+ */ 
 class Quantity extends BigNumber {
 
+    /**
+     * 
+     * @param {string} format must be DecimalExponent | DecimalSI | BinarySI
+     * @param {number|string|BigNumber|Quantity} numberlike 
+     * @param {number} base 
+     */
     constructor(format, numberlike, base) {
         super(numberlike, base)
         this.format = format
+        this.digit = null
+        this.suffix = null
     }
 
     sign() {
@@ -240,7 +319,18 @@ class Quantity extends BigNumber {
         return new Quantity(this.format, super.floor())
     }
 
+    toPrecision(sd, rm){
+        return new Quantity(this.format, super.toPrecision(sd,rm))
+    }
+
+    /**
+     * Returns a string representing the value of this BigNumber in the base `10`
+     */
     toString() {
+        if (this.digit != null && this.suffix != null) {
+            return this.digit.toString() + this.suffix
+        }
+
         let result
         let times
         let base
@@ -283,7 +373,36 @@ class Quantity extends BigNumber {
 
         return (new BigNumber(result)).toString() + suffix
     }
+    /**
+     * Convert this quantity to a quantity with specific digit and suffix.
+     * The digit is a BigNumber rounded by rounding mode `rm` to a maximum of `dp` decimal places
+     * 
+     * @param {string} suffix 
+     * @param {number} [dp] If `dp` is omitted, or is `null` or `undefined`, the return quantity.digit is rounded to a whole number.
+     * @param {number} [rm] If `rm` is omitted, or is `null` or `undefined`, `ROUNDING_MODE` is used.
+     */
+    convertTo(suffix, dp, rm) {
+        let [base, exponent, format, ok] = quantitySuffixer.interpret(suffix)
+        if (!ok) {
+            throw ErrSuffix
+        }
 
+        // roundup
+        // 0.5n roundup to 1n
+        let scaled = this.round(-Nano)
+        
+
+        // get true number and rounded to precision significant digits
+        let result = scaled.div(new BigNumber(base).pow(exponent))
+        if (dp != null && dp >= 0) {
+            result = result.round(dp, rm)
+        }
+
+        result.digit = new BigNumber(result)
+        result.suffix = suffix
+        result.format = format
+        return result
+    }
 }
 
 function removeFactors(value, base) {
@@ -328,7 +447,14 @@ function removeFactors(value, base) {
 }
 
 // -----------------------------------------------------------
-
+/**
+ * parse quantity string to positive, value, num, denom, suffix 
+ * example: a string 10.25Mi will be parsed to [true, 10.25, 10, 25, Mi]
+ * 
+ * @param {string} str 
+ * @throws {ErrFormatWrong}
+ * @returns {[boolean, string, string, string, string]}
+ */
 function parseQuantityString(str) {
     let positive = true
     let pos = 0
@@ -484,8 +610,17 @@ function parseQuantityString(str) {
     throw ErrFormatWrong
 }
 
-// parse string to Quantity
-// throw Err if quantity format is not match "^([+-]?[0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
+// 
+// 
+
+/**
+ * parse string to Quantity
+ * 
+ * @param {string} str 
+ * @throws {ErrFormatWrong} if quantity format is not match "^([+-]?[0-9.]+)([eEinumkKMGTP]*[-+]?[0-9]*)$"
+ * @throws {ErrSuffix} if suffix is not registered
+ * @returns {Quantity}
+ */
 function parseQuantity(str) {
     if (str.length === 0) {
         throw ErrFormatWrong
