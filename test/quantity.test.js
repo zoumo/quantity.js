@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import assert from "assert"
-import * as Q from "../quantity.js"
+import * as Q from "./dist/quantity.js"
 
 describe("quantity suffixer", function() {
     let qs = Q.quantitySuffixer
