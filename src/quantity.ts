@@ -81,7 +81,7 @@ class listSuffixer {
      * @param {string} suffix 
      * @param {bePair} bePair 
      */
-    addSuffix(suffix: any, bePair: any) {
+    addSuffix = (suffix: any, bePair: any) => {
         this.suffixToBE[suffix] = bePair
         this.beToSuffix[JSON.stringify(bePair)] = suffix
 
@@ -94,7 +94,7 @@ class listSuffixer {
      * @param {string} suffix 
      * @returns {[number, number, boolean]} if suffix is not registered, the return boolean will be false
      */
-    lookup(suffix: any) {
+    lookup = (suffix: any) => {
         if (!this.suffixToBE.hasOwnProperty(suffix)) {
             return [0, 0, false]
         }
@@ -110,7 +110,7 @@ class listSuffixer {
      * @param {number} exponent 
      * @returns {[string, boolean]}
      */
-    construct(base: any, exponent: any) {
+    construct = (base: any, exponent: any) => {
         let key = JSON.stringify(new bePair(base, exponent))
         if (!this.beToSuffix.hasOwnProperty(key)) {
             return ["", false]
@@ -147,7 +147,7 @@ class suffixHandler {
      * @param {string} suffix 
      * @returns {[number, number, string, boolean]}
      */
-    interpret(suffix: any) {
+    public interpret(suffix: any) {
         let [b, e, ok] = this.decSuffixes.lookup(suffix)
         if (ok) {
             return [b, e, DecimalSI, true]
@@ -173,7 +173,7 @@ class suffixHandler {
      * @param {string} format 
      * @returns {[string, boolean]}
      */
-    construct(base: any, exponent: any, format: any) {
+    public construct (base: any, exponent: any, format: any) {
         switch (format) {
             case DecimalSI:
                 return this.decSuffixes.construct(base, exponent)
@@ -227,7 +227,7 @@ class fastLookup extends suffixHandler {
      * @param {string} suffix 
      * @returns {[number, number, string, boolean]}
      */
-    interpret(suffix: any) {
+    public interpret = (suffix: any) => {
         switch (suffix) {
             case "":
                 return [10, 0, DecimalSI, true]
@@ -261,10 +261,10 @@ const quantitySuffixer = new fastLookup()
  * @class Quantity
  */ 
 class Quantity extends BigNumber {
-    public format: any = {};
-    public digit: any = null;
-    public suffix: any = null;
-    public s: any = null;
+    public format: any
+    private digit: any;
+    private suffix: any;
+    public s: any;
 
     /**
      * 
