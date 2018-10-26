@@ -5,7 +5,7 @@
   "main": "./dist/entry.js",
   "scripts": {
     "test": "mocha --require babel-register",
-    "start": "node --harmony entry.js",
+    "start": "node --harmony ./dist/entry.js",
     "_rm-build": "rm -rf dist",
     "build": "yarn run _rm-build && yarn run tsc",
     "pub": "yarn && yarn run build && npm publish"
