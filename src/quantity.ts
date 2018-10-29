@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // var BigNumber = require('bignumber.js')
-import BigNumber from "bignumber.js";
+import BigNumber from "bignumber.js"
 
 // Formats
 const DecimalExponent = "DecimalExponent"
@@ -45,8 +45,8 @@ const Exa = 18
  * bePair contains a base and exponent pair
  */
 class bePair {
-    private base: any = undefined;
-    private exponent: any = undefined;
+    private base: any = undefined
+    private exponent: any = undefined
 
     constructor(base: any, exponent: any) {
         
@@ -60,8 +60,8 @@ class bePair {
  * @class listSuffixer
  */ 
 class listSuffixer {
-    private suffixToBE: any = {};
-    private beToSuffix: any = {};
+    private suffixToBE: any = {}
+    private beToSuffix: any = {}
 
     /**
      * @constructor listSuffixer
@@ -81,7 +81,7 @@ class listSuffixer {
      * @param {string} suffix 
      * @param {bePair} bePair 
      */
-    addSuffix = (suffix: any, bePair: any) => {
+    addSuffix(suffix: any, bePair: any) {
         this.suffixToBE[suffix] = bePair
         this.beToSuffix[JSON.stringify(bePair)] = suffix
 
@@ -94,7 +94,7 @@ class listSuffixer {
      * @param {string} suffix 
      * @returns {[number, number, boolean]} if suffix is not registered, the return boolean will be false
      */
-    lookup = (suffix: any) => {
+    lookup(suffix: any) {
         if (!this.suffixToBE.hasOwnProperty(suffix)) {
             return [0, 0, false]
         }
@@ -110,7 +110,7 @@ class listSuffixer {
      * @param {number} exponent 
      * @returns {[string, boolean]}
      */
-    construct = (base: any, exponent: any) => {
+    construct(base: any, exponent: any) {
         let key = JSON.stringify(new bePair(base, exponent))
         if (!this.beToSuffix.hasOwnProperty(key)) {
             return ["", false]
@@ -227,7 +227,7 @@ class fastLookup extends suffixHandler {
      * @param {string} suffix 
      * @returns {[number, number, string, boolean]}
      */
-    public interpret = (suffix: any) => {
+    public interpret(suffix: any) {
         switch (suffix) {
             case "":
                 return [10, 0, DecimalSI, true]
