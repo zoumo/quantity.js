@@ -45,12 +45,10 @@ const Exa = 18
  * bePair contains a base and exponent pair
  */
 class bePair {
-    private base: any = undefined
-    private exponent: any = undefined
+    private base: number = 0
+    private exponent: number = 0
 
-    constructor(base: any, exponent: any) {
-        
-
+    constructor(base: number, exponent: number) {
         this.base = base
         this.exponent = exponent
     }
@@ -58,7 +56,7 @@ class bePair {
 /**
  * listSuffixer contains two mapping relationship
  * @class listSuffixer
- */ 
+ */
 class listSuffixer {
     private suffixToBE: any = {}
     private beToSuffix: any = {}
@@ -81,7 +79,7 @@ class listSuffixer {
      * @param {string} suffix 
      * @param {bePair} bePair 
      */
-    addSuffix(suffix: any, bePair: any) {
+    addSuffix(suffix: string, bePair: bePair) {
         this.suffixToBE[suffix] = bePair
         this.beToSuffix[JSON.stringify(bePair)] = suffix
 
@@ -94,7 +92,7 @@ class listSuffixer {
      * @param {string} suffix 
      * @returns {[number, number, boolean]} if suffix is not registered, the return boolean will be false
      */
-    lookup(suffix: any) {
+    lookup(suffix: string): [number, number, boolean] {
         if (!this.suffixToBE.hasOwnProperty(suffix)) {
             return [0, 0, false]
         }
@@ -110,7 +108,7 @@ class listSuffixer {
      * @param {number} exponent 
      * @returns {[string, boolean]}
      */
-    construct(base: any, exponent: any) {
+    construct(base: number, exponent: number): [string, boolean] {
         let key = JSON.stringify(new bePair(base, exponent))
         if (!this.beToSuffix.hasOwnProperty(key)) {
             return ["", false]
@@ -126,8 +124,8 @@ class listSuffixer {
  * @class suffixHandler
  */
 class suffixHandler {
-    public decSuffixes: any = new listSuffixer()
-    public binSuffixes: any = new listSuffixer()
+    public decSuffixes: listSuffixer = new listSuffixer()
+    public binSuffixes: listSuffixer = new listSuffixer()
 
     /**
      * @constructor suffixHandler
@@ -147,7 +145,7 @@ class suffixHandler {
      * @param {string} suffix 
      * @returns {[number, number, string, boolean]}
      */
-    public interpret(suffix: any) {
+    public interpret(suffix: string): [number, number, string, boolean] {
         let [b, e, ok] = this.decSuffixes.lookup(suffix)
         if (ok) {
             return [b, e, DecimalSI, true]
@@ -173,7 +171,7 @@ class suffixHandler {
      * @param {string} format 
      * @returns {[string, boolean]}
      */
-    public construct (base: any, exponent: any, format: any) {
+    public construct(base: number, exponent: number, format: string): [string, boolean] {
         switch (format) {
             case DecimalSI:
                 return this.decSuffixes.construct(base, exponent)
@@ -195,7 +193,7 @@ class suffixHandler {
 }
 
 class fastLookup extends suffixHandler {
-    
+
     constructor() {
         super()
 
@@ -227,7 +225,7 @@ class fastLookup extends suffixHandler {
      * @param {string} suffix 
      * @returns {[number, number, string, boolean]}
      */
-    public interpret(suffix: any) {
+    public interpret(suffix: string): [number, number, string, boolean] {
         switch (suffix) {
             case "":
                 return [10, 0, DecimalSI, true]
@@ -259,12 +257,11 @@ const quantitySuffixer = new fastLookup()
 /**
  * Quantity extends BigNumber, rewrite the string function
  * @class Quantity
- */ 
+ */
 class Quantity extends BigNumber {
-    public format: any
-    private digit: any;
-    private suffix: any;
-    public s: any;
+    public format: string
+    private digit: number | string | BigNumber | Quantity | null
+    private suffix: string | null
 
     /**
      * 
@@ -272,7 +269,7 @@ class Quantity extends BigNumber {
      * @param {number|string|BigNumber|Quantity} numberlike 
      * @param {number} base 
      */
-    constructor(format: any, numberlike: any, base: any) {
+    constructor(format: string, numberlike: number | string | BigNumber, base?: number) {
         super(numberlike, base)
         this.format = format
         this.digit = null
@@ -284,78 +281,78 @@ class Quantity extends BigNumber {
     }
 
     neg(): any {
-        return new Quantity(this.format, super.neg(), null);
+        return new Quantity(this.format, super.neg());
     }
 
-    minus(n: any, base: any): any {
-        return new Quantity(this.format, super.minus(n, base), null)
+    minus(n: number | string | BigNumber, base?: number): any {
+        return new Quantity(this.format, super.minus(n, base))
     }
 
-    sub(n: any, base: any): any {
-        return new Quantity(this.format, super.sub(n, base), null)
+    sub(n: number | string | BigNumber, base?: number): any {
+        return new Quantity(this.format, super.sub(n, base))
     }
 
-    add(n: any, base: any) : any {
-        return new Quantity(this.format, super.add(n, base), null)
+    add(n: number | string | BigNumber, base?: number): any {
+        return new Quantity(this.format, super.add(n, base))
     }
 
-    plus(n: any, base: any) : any {
-        return new Quantity(this.format, super.plus(n, base), null)
+    plus(n: number | string | BigNumber, base?: number): any {
+        return new Quantity(this.format, super.plus(n, base))
     }
 
-    div(n: any, base: any) : any {
-        return new Quantity(this.format, super.div(n, base), null)
+    div(n: number | string | BigNumber, base?: number): any {
+        return new Quantity(this.format, super.div(n, base))
     }
 
-    mul(n: any, base: any) : any {
-        return new Quantity(this.format, super.mul(n, base), null)
+    mul(n: number | string | BigNumber, base?: number): any {
+        return new Quantity(this.format, super.mul(n, base))
     }
 
-    times(n: any, base: any) : any {
-        return new Quantity(this.format, super.times(n, base), null)
+    times(n: number | string | BigNumber, base?: number): any {
+        return new Quantity(this.format, super.times(n, base))
     }
 
-    mod(n: any, base: any) : any {
-        return new Quantity(this.format, super.mod(n, base), null)
+    mod(n: number | string | BigNumber, base?: number): any {
+        return new Quantity(this.format, super.mod(n, base))
     }
 
-    modulo(n: any, base: any): any {
-        return new Quantity(this.format, super.modulo(n, base), null)
+    modulo(n: number | string | BigNumber, base?: number): any {
+        return new Quantity(this.format, super.modulo(n, base))
     }
 
-    round(dp: any, rm: any) : any {
-        return new Quantity(this.format, super.round(dp, rm), null)
+    round(dp?: number, rm?: number): any {
+        return new Quantity(this.format, super.round(dp, rm))
     }
 
-    ceil() : any {
-        return new Quantity(this.format, super.ceil(), null)
+    ceil(): any {
+        return new Quantity(this.format, super.ceil())
     }
 
-    floor() : any {
-        return new Quantity(this.format, super.floor(), null)
+    floor(): any {
+        return new Quantity(this.format, super.floor())
     }
 
-    toPrecision(sd: any, rm: any): any {
-        return new Quantity(this.format, super.toPrecision(sd,rm), null)
+    toPrecision(sd?: number, rm?: number): any {
+        return new Quantity(this.format, super.toPrecision(sd, rm))
     }
 
     /**
      * Returns a string representing the value of this BigNumber in the base `10`
      */
-    toString() {
+    toString(): string {
         if (this.digit != null && this.suffix != null) {
             return this.digit.toString() + this.suffix
         }
 
         let result
-        let times
-        let base
-        let exponent
-        let scale = 0
+        let times: number
+        let base: number = 0
+        let exponent: number = 0
+        let scale: number = 0
 
         // roundup
         // 0.5n roundup to 1n
-        let scaled: any = this.round(-Nano, 0)
+        let scaled = this.round(-Nano, 0)
 
         switch (this.format) {
             case BinarySI:
@@ -397,7 +394,7 @@ class Quantity extends BigNumber {
      * @param {number} [dp] If `dp` is omitted, or is `null` or `undefined`, the return quantity.digit is rounded to a whole number.
      * @param {number} [rm] If `rm` is omitted, or is `null` or `undefined`, `ROUNDING_MODE` is used.
      */
-    convertTo(suffix: any, dp: any, rm: any) {
+    convertTo(suffix: string, dp?: number, rm?: number) {
         let [base, exponent, format, ok] = quantitySuffixer.interpret(suffix)
         if (!ok) {
             throw ErrSuffix
@@ -405,8 +402,8 @@ class Quantity extends BigNumber {
 
         // roundup
         // 0.5n roundup to 1n
-        let scaled: any = this.round(-Nano, null)
-        
+        let scaled: any = this.round(-Nano)
+
 
         // get true number and rounded to precision significant digits
         let result = scaled.div(new BigNumber(base).pow(exponent))
@@ -421,10 +418,10 @@ class Quantity extends BigNumber {
     }
 }
 
-function removeFactors(value: any, base: any) {
+function removeFactors(value: number | Quantity, base: number): [any, number] {
     let times = 0
     if (value instanceof Quantity) {
-        let result: any = value
+        let result = value
         let sign = result.sign()
         if (sign === -1) {
             result = result.neg()
@@ -433,9 +430,9 @@ function removeFactors(value: any, base: any) {
         // value 3 * 1024 ^ 2  base 1024
         // times = 2
         // result 3
-        while (result.gte(base) && result.mod(base, null).isZero()) {
+        while (result.gte(base) && result.mod(base).isZero()) {
             times++
-            result = result.div(base,)
+            result = result.div(base)
         }
 
         if (sign === -1) {
@@ -471,7 +468,7 @@ function removeFactors(value: any, base: any) {
  * @throws {ErrFormatWrong}
  * @returns {[boolean, string, string, string, string]}
  */
-function parseQuantityString(str: string) {
+function parseQuantityString(str: string): [boolean, string, string, string, string] {
     let positive = true
     let pos = 0
     let end = str.length
@@ -494,28 +491,62 @@ function parseQuantityString(str: string) {
 
     // strip leading zeros
     Zeroes:
-        for (let i = pos;; i++) {
-            if (i >= end) {
-                num = "0"
-                value = num
-                return [positive, value, num, denom, suffix]
-            }
-
-            switch (str.charAt(i)) {
-                case "0":
-                    pos++
-                    break
-                default:
-                    break Zeroes
-            }
-
+    for (let i = pos; ; i++) {
+        if (i >= end) {
+            num = "0"
+            value = num
+            return [positive, value, num, denom, suffix]
         }
+
+        switch (str.charAt(i)) {
+            case "0":
+                pos++
+                break
+            default:
+                break Zeroes
+        }
+
+    }
 
     // extract the numerator
     Num:
-        for (let i = pos;; i++) {
+    for (let i = pos; ; i++) {
+        if (i >= end) {
+            num = str.slice(pos, end)
+            value = str.slice(0, end)
+            return [positive, value, num, denom, suffix]
+        }
+        switch (str.charAt(i)) {
+            case "0":
+            case "1":
+            case "2":
+            case "3":
+            case "4":
+            case "5":
+            case "6":
+            case "7":
+            case "8":
+            case "9":
+                break
+            default:
+                num = str.slice(pos, i)
+                pos = i
+                break Num
+        }
+    }
+
+    // if we stripped all numerator positions, always return 0
+    if (num.length === 0) {
+        num = "0"
+    }
+
+    if (pos < end && str.charAt(pos) == ".") {
+        pos++
+
+        Denom:
+        for (let i = pos; ; i++) {
             if (i >= end) {
-                num = str.slice(pos, end)
+                denom = str.slice(pos, end)
                 value = str.slice(0, end)
                 return [positive, value, num, denom, suffix]
             }
@@ -532,45 +563,11 @@ function parseQuantityString(str: string) {
                 case "9":
                     break
                 default:
-                    num = str.slice(pos, i)
+                    denom = str.slice(pos, i)
                     pos = i
-                    break Num
+                    break Denom
             }
         }
-
-    // if we stripped all numerator positions, always return 0
-    if (num.length === 0) {
-        num = "0"
-    }
-
-    if (pos < end && str.charAt(pos) == ".") {
-        pos++
-
-        Denom:
-            for (let i = pos;; i++) {
-                if (i >= end) {
-                    denom = str.slice(pos, end)
-                    value = str.slice(0, end)
-                    return [positive, value, num, denom, suffix]
-                }
-                switch (str.charAt(i)) {
-                    case "0":
-                    case "1":
-                    case "2":
-                    case "3":
-                    case "4":
-                    case "5":
-                    case "6":
-                    case "7":
-                    case "8":
-                    case "9":
-                        break
-                    default:
-                        denom = str.slice(pos, i)
-                        pos = i
-                        break Denom
-                }
-            }
     }
 
     value = str.slice(0, pos)
@@ -579,7 +576,7 @@ function parseQuantityString(str: string) {
     }
 
     let suffixStart = pos
-    for (let i = pos;; i++) {
+    for (let i = pos; ; i++) {
         if (i >= end) {
             suffix = str.slice(suffixStart, end)
             return [positive, value, num, denom, suffix]
@@ -601,27 +598,27 @@ function parseQuantityString(str: string) {
     }
 
     Suffix:
-        for (let i = pos;; i++) {
-            if (i >= end) {
-                suffix = str.slice(suffixStart, end)
-                return [positive, value, num, denom, suffix]
-            }
-            switch (str.charAt(i)) {
-                case "0":
-                case "1":
-                case "2":
-                case "3":
-                case "4":
-                case "5":
-                case "6":
-                case "7":
-                case "8":
-                case "9":
-                    break
-                default:
-                    break Suffix
-            }
+    for (let i = pos; ; i++) {
+        if (i >= end) {
+            suffix = str.slice(suffixStart, end)
+            return [positive, value, num, denom, suffix]
         }
+        switch (str.charAt(i)) {
+            case "0":
+            case "1":
+            case "2":
+            case "3":
+            case "4":
+            case "5":
+            case "6":
+            case "7":
+            case "8":
+            case "9":
+                break
+            default:
+                break Suffix
+        }
+    }
 
     throw ErrFormatWrong
 }
@@ -637,16 +634,16 @@ function parseQuantityString(str: string) {
  * @throws {ErrSuffix} if suffix is not registered
  * @returns {Quantity}
  */
-function parseQuantity(str: string) {
+function parseQuantity(str: string): Quantity {
     if (str.length === 0) {
         throw ErrFormatWrong
     }
 
     if (str == "0") {
-        return new Quantity(DecimalSI, 0, null)
+        return new Quantity(DecimalSI, 0)
     }
 
-    let [positive, value, num, denom, suf]: any = parseQuantityString(str)
+    let [positive, value, num, denom, suf] = parseQuantityString(str)
     let [base, exponent, format, ok] = quantitySuffixer.interpret(suf)
     if (!ok) {
         throw ErrSuffix
@@ -655,7 +652,7 @@ function parseQuantity(str: string) {
     let big = new BigNumber(value)
     big = big.mul(new BigNumber(base).pow(exponent))
 
-    return new Quantity(format, big, null)
+    return new Quantity(format, big)
 }
 
 export {
