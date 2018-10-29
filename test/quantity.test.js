@@ -181,6 +181,32 @@ describe("operation", function() {
     })
 })
 
+describe("logical operation", () => {
+    let parse = Q.parseQuantity
+
+    it("gt", () => {
+        assert.ok(parse("100Mi").gt(parse("50Mi")))
+        assert.ok(parse("1Mi").gt(parse("1Ki")))
+    })
+
+    it("gte", () => {
+        assert.ok(parse("100Mi").gte(parse("100Mi")))
+    })
+
+    it("lt", () => {
+        assert.ok(parse("10Mi").lt(parse("100Mi")))
+    })
+
+    it("lte", () => {
+        assert.ok(parse("100Mi").lte(parse("100Mi")))
+    })
+
+    it("equal", () => {
+        assert.ok(parse("100Mi").equals(parse("100Mi")))
+    })
+
+})
+
 describe("convert", function() {
     let parse = Q.parseQuantity
 
