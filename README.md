@@ -54,3 +54,15 @@ x.times(parse("50")) // "100"
 x = parse("10")
 x.mod(parse("3")) // "1"
 ```
+
+# Build & Test
+ dev 
+```
+ yarn run build
+ yarn run test
+ ```
+
+ publish
+ ```
+ yarn run pub
+ ```
