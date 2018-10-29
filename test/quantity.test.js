@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import assert from "assert"
-import * as Q from "../quantity.js"
+import * as Q from "../dist/quantity.js"
 
 describe("quantity suffixer", function() {
     let qs = Q.quantitySuffixer
@@ -84,6 +84,8 @@ describe("parse quantity and toString", function() {
     it("parse BinarySI", function() {
 
         let q = parse("123Mi")
+        console.info('ts', q.toString());
+
         assert.equal(q.toString(), "123Mi")
 
         q = parse("23Ki")
